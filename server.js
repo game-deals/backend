@@ -1,14 +1,10 @@
-// install this in the terminal:
-// *** npm install express cors dotenv pg axios fs ***
+
 
 'use strict';
-
 const express = require('express');
 const cors = require('cors');
 const server = express();
-require('dotenv').config();
 const pg = require('pg');
-
 server.use(cors());
 const PORT = 3005;
 server.use(express.json()); ////
@@ -19,8 +15,8 @@ const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
 server.post('/addToFav', addToFav);
-
-////////////////////////////////
+server.get('/',gitListOfDeals );
+server.get('*', errorHandler);
 
 function addToFav(req, res){
     const favGames = req.body;
@@ -39,24 +35,35 @@ function addToFav(req, res){
     })
 }
 
+function gitListOfDeals (req, res) {
+  
+ let url = `https://www.cheapshark.com/api/1.0/deals`;
+       axios.get(url)
+       .then(result =>{
+        let Game=result.data;
+            //  console.log(result.data);
+            res.send(Game);
+       })
+    .catch((error)=>{
+       errorHandler(error, req, res) 
+    })
+ }
+
+    function errorHandler(error,req,res){
+        const err={
+            errNum:500,
+            msg:error
+        }
+        res.status(500).send(err);
 
 
-/////////////////////////////////
-// 404:
-// server.use(function(req, res){
-//     res.status(404).send('page not found...');
-// });
 
-function errorHandler(error,req,res){
-    const err = {
-        status: 500,
-        message: error
-    }
-    res.status(500).send(err);
-}
 client.connect()
 .then(() => {
     server.listen(PORT, () =>{
         console.log(`port: ${PORT} , ready`)
     })
 });
+
+
+  
