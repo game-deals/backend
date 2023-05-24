@@ -1,18 +1,55 @@
+
+
+'use strict';
 const express = require('express');
-const server = express();
-const axios = require("axios");
-require('dotenv').config();
 const cors = require('cors');
-server.use(cors());
-const PORT=3005;
+const server = express();
 const pg = require('pg');
+server.use(cors());
+const PORT = 3005;
+server.use(express.json()); ////
+let axios = require('axios');
 
 
+const client = new pg.Client("postgresql://localhost:5432/games");
+////////////////////////////////
 
 
 server.get('/getMovies/:id', getMoviesByIdHandler)
-server.get('*', error400Handler)
+server.post('/addToFav', addToFav);
+server.get('/',gitListOfDeals );
+server.get('*', errorHandler);
 
+function addToFav(req, res){
+    const favGames = req.body;
+    const sql = `INSERT INTO favgames (thumb, title, steamratingcount, steamratingpercent, comment)
+    VALUES ($1, $2, $3, $4, $5);`
+
+    // values names // from this api https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15
+    // except for comment
+    const values = [favGames.thumb, favGames.title, favGames.steamRatingCount, favGames.steamRatingPercent, favGames.comment]// *****
+    client.query(sql, values)
+    .then(data => {
+        res.send("the game has been added to favorite");
+    })
+    .catch((error)=>{
+       errorHandler(error, req, res) 
+    })
+}
+
+function gitListOfDeals (req, res) {
+  
+ let url = `https://www.cheapshark.com/api/1.0/deals`;
+       axios.get(url)
+       .then(result =>{
+        let Game=result.data;
+            //  console.log(result.data);
+            res.send(Game);
+       })
+    .catch((error)=>{
+       errorHandler(error, req, res) 
+    })
+ }
 function getMoviesByIdHandler(req, res) {
     const id= encodeURIComponent(req.params.id);
 console.log(encodeURIComponent(req.params.id))
@@ -29,23 +66,23 @@ console.log(encodeURIComponent(req.params.id))
         errorHandler(error,req,res)
     })
 }
-function error400Handler(req, res) {
-    let error400 = {
-        "status": 400,
 
-        "responseText": 'page not found error'
-    }
-    res.status(error400.status).send(error400)
-}
+    function errorHandler(error,req,res){
+        const err={
+            errNum:500,
+            msg:error
+        }
+        res.status(500).send(err);
 
-function errorHandler(error,req,res){
-    const err = {
-        status: 500,
-        message: error
-    }
-    res.status(500).send(err);
-}
 
-server.listen(PORT, () => {
-    console.log(`Listening on ${PORT}: I'm ready`)
-})
+
+client.connect()
+.then(() => {
+    server.listen(PORT, () =>{
+        console.log(`port: ${PORT} , ready`)
+    })
+});
+
+
+  
+
