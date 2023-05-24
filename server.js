@@ -1,17 +1,39 @@
-'use strict'
 
+
+'use strict';
 const express = require('express');
+const cors = require('cors');
 const server = express();
-const cors=require('cors');
-const axios = require('axios');
-const pg=require('pg');
+const pg = require('pg');
 server.use(cors());
-server.use(express.json());
-const PORT =3005;
+const PORT = 3005;
+server.use(express.json()); ////
+let axios = require('axios');
 
+
+const client = new pg.Client("postgresql://localhost:5432/games");
+////////////////////////////////
+
+server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
 server.get('*', errorHandler);
 
+function addToFav(req, res){
+    const favGames = req.body;
+    const sql = `INSERT INTO favgames (thumb, title, steamratingcount, steamratingpercent, comment)
+    VALUES ($1, $2, $3, $4, $5);`
+
+    // values names // from this api https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15
+    // except for comment
+    const values = [favGames.thumb, favGames.title, favGames.steamRatingCount, favGames.steamRatingPercent, favGames.comment]// *****
+    client.query(sql, values)
+    .then(data => {
+        res.send("the game has been added to favorite");
+    })
+    .catch((error)=>{
+       errorHandler(error, req, res) 
+    })
+}
 
 function gitListOfDeals (req, res) {
   
@@ -22,6 +44,9 @@ function gitListOfDeals (req, res) {
             //  console.log(result.data);
             res.send(Game);
        })
+    .catch((error)=>{
+       errorHandler(error, req, res) 
+    })
  }
 
     function errorHandler(error,req,res){
@@ -30,8 +55,15 @@ function gitListOfDeals (req, res) {
             msg:error
         }
         res.status(500).send(err);
-    }
 
-    server.listen(PORT, () => {
-        console.log('server')
-       });
+
+
+client.connect()
+.then(() => {
+    server.listen(PORT, () =>{
+        console.log(`port: ${PORT} , ready`)
+    })
+});
+
+
+  
