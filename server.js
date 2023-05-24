@@ -72,7 +72,7 @@ console.log(encodeURIComponent(req.params.id))
             errNum:500,
             msg:error
         }
-        res.status(500).send(err);
+        res.status(500).send(err);}
 
 
 
