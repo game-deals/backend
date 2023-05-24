@@ -14,6 +14,8 @@ let axios = require('axios');
 const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
+
+server.get('/getMovies/:id', getMoviesByIdHandler)
 server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
 server.get('*', errorHandler);
@@ -48,6 +50,22 @@ function gitListOfDeals (req, res) {
        errorHandler(error, req, res) 
     })
  }
+function getMoviesByIdHandler(req, res) {
+    const id= encodeURIComponent(req.params.id);
+console.log(encodeURIComponent(req.params.id))
+    const url = `https://www.cheapshark.com/api/1.0/deals?id=${id}`
+
+    
+    axios.get(url)
+    .then(body=>{
+       console.log(body.data.gameInfo)
+        res.send(body.data.gameInfo);
+    })
+
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
 
     function errorHandler(error,req,res){
         const err={
@@ -67,3 +85,4 @@ client.connect()
 
 
   
+
