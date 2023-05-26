@@ -17,6 +17,7 @@ const client = new pg.Client("postgresql://localhost:5432/games");
 
 server.get('/trending', trendingHandler)
 server.get('/getGames/:id', getGamesByIdHandler)
+server.get('/getFav', getFavHandler)
 server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
 server.get('*', errorHandler);
@@ -67,7 +68,17 @@ console.log(encodeURIComponent(req.params.id))
         errorHandler(error,req,res)
     })
 }
+function getFavHandler(req, res) {
+    const sql = `SELECT * FROM favgames`;
+    client.query(sql)
+    .then(data=>{
+        res.send(data.rows);
+    })
 
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
 
 
 function trendingHandler(req, res) {
