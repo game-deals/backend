@@ -1,20 +1,20 @@
-
-
-'use strict';
-const express = require('express');
-const cors = require('cors');
+"use strict";
+const express = require("express");
+const cors = require("cors");
 const server = express();
-const pg = require('pg');
+const pg = require("pg");
 server.use(cors());
 const PORT = 3005;
 server.use(express.json()); ////
-let axios = require('axios');
-
+let axios = require("axios");
 
 const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
 
+
+server.put("/update/:id", updateGame);
+server.delete("/delete/:id", deleteGame);
 server.get('/trending', trendingHandler)
 server.get('/getGames/:id', getGamesByIdHandler)
 server.get('/getFav', getFavHandler)
@@ -36,22 +36,28 @@ function addToFav(req, res){
     })
     .catch((error)=>{
        errorHandler(error, req, res) 
+
     })
+    .catch((error) => {
+      errorHandler(error, req, res);
+    });
 }
 
-function gitListOfDeals (req, res) {
-  
- let url = `https://www.cheapshark.com/api/1.0/deals`;
-       axios.get(url)
-       .then(result =>{
-        let Game=result.data;
-            //  console.log(result.data);
-            res.send(Game);
-       })
-    .catch((error)=>{
-       errorHandler(error, req, res) 
+function gitListOfDeals(req, res) {
+  let url = `https://www.cheapshark.com/api/1.0/deals`;
+  axios
+    .get(url)
+    .then((result) => {
+      let Game = result.data;
+      //  console.log(result.data);
+      res.send(Game);
     })
- }
+
+    .catch((error) => {
+      errorHandler(error, req, res);
+    });
+}
+
 function getGamesByIdHandler(req, res) {
     const id= encodeURIComponent(req.params.id);
 console.log(encodeURIComponent(req.params.id))
@@ -62,11 +68,12 @@ console.log(encodeURIComponent(req.params.id))
     .then(body=>{
        console.log(body.data.gameInfo)
         res.send(body.data.gameInfo);
+
     })
 
-    .catch((error)=>{
-        errorHandler(error,req,res)
-    })
+    .catch((error) => {
+      errorHandler(error, req, res);
+    });
 }
 function getFavHandler(req, res) {
     const sql = `SELECT * FROM favgames`;
@@ -80,6 +87,51 @@ function getFavHandler(req, res) {
     })
 }
 
+function updateGame(req, res) {
+  const id = req.params.id;
+  const updatedComment = req.body;
+  const sql = `UPDATE favgames
+    SET comment = $1
+    WHERE id = ${id} RETURNING *;`;
+  const values = [updatedComment.comment];
+  client
+    .query(sql, values)
+    .then((data) => {
+      const sql = `SELECT * FROM favgames;`;
+      client
+        .query(sql)
+        .then((allData) => {
+          res.send(allData.rows);
+        })
+        .catch((error) => {
+          errorHandler(error, req, res);
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+} ////
+function deleteGame(req, res) {
+  const id = req.params.id;
+  const sql = `DELETE FROM favgames WHERE id = ${id} RETURNING *;`;
+
+  client
+    .query(sql)
+    .then((data) => {
+      const sql = `SELECT * FROM favgames;`;
+      client
+        .query(sql)
+        .then((allData) => {
+          res.send(allData.rows);
+        })
+        .catch((error) => {
+          errorHandler(error, req, res);
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 function trendingHandler(req, res) {
     const url =' https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0'
@@ -112,22 +164,18 @@ function axiosTrending(title, description, urlToImage,url) {
    
 }
 
-    function errorHandler(error,req,res){
-        const err={
-            errNum:500,
-            msg:error
-        }
-        res.status(500).send(err);}
 
+///////////////////////////////////////////////
+function errorHandler(error, req, res) {
+  const err = {
+    errNum: 500,
+    msg: error,
+  };
+  res.status(500).send(err);
+}
 
-
-client.connect()
-.then(() => {
-    server.listen(PORT, () =>{
-        console.log(`port: ${PORT} , ready`)
-    })
+client.connect().then(() => {
+  server.listen(PORT, () => {
+    console.log(`port: ${PORT} , ready`);
+  });
 });
-
-
-  
-
