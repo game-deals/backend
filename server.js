@@ -15,7 +15,8 @@ const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
 
-server.get('/getMovies/:id', getMoviesByIdHandler)
+server.get('/trending', trendingHandler)
+server.get('/getGames/:id', getGamesByIdHandler)
 server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
 server.get('*', errorHandler);
@@ -50,7 +51,7 @@ function gitListOfDeals (req, res) {
        errorHandler(error, req, res) 
     })
  }
-function getMoviesByIdHandler(req, res) {
+function getGamesByIdHandler(req, res) {
     const id= encodeURIComponent(req.params.id);
 console.log(encodeURIComponent(req.params.id))
     const url = `https://www.cheapshark.com/api/1.0/deals?id=${id}`
@@ -65,6 +66,39 @@ console.log(encodeURIComponent(req.params.id))
     .catch((error)=>{
         errorHandler(error,req,res)
     })
+}
+
+
+
+function trendingHandler(req, res) {
+    const url =' https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0'
+
+
+    axios.get(url)
+        .then(axiosResult => {
+
+            let mapResult = axiosResult.data.articles.map(item => {
+                let singlemovie = new axiosTrending(item.title, item.description, item.urlToImage, item.url);
+                return singlemovie;
+            })
+            console.log(mapResult)
+            res.send(mapResult)
+
+        })
+        .catch((error) => {
+            console.log('sorry you have something error', error)
+            res.status(500).send(error);
+        })
+
+
+}
+function axiosTrending(title, description, urlToImage,url) {
+    
+    this.title = title;
+    this.description = description;
+    this.urlToImage = urlToImage;
+    this.url=url;
+   
 }
 
     function errorHandler(error,req,res){
