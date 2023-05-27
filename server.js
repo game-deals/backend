@@ -11,8 +11,6 @@ let axios = require("axios");
 const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
-
-
 server.put("/update/:id", updateGame);
 server.delete("/delete/:id", deleteGame);
 server.get('/trending', trendingHandler)
@@ -24,12 +22,12 @@ server.get('*', errorHandler);
 
 function addToFav(req, res){
     const favGames = req.body;
-    const sql = `INSERT INTO favgames (thumb, title, steamratingcount, steamratingpercent, comment)
-    VALUES ($1, $2, $3, $4, $5);`
+    const sql = `INSERT INTO favgames (id,thumb, title,  steamRatingCount, steamRatingPercent, comment)
+    VALUES ($1, $2, $3, $4, $5,$6);`
 
     // values names // from this api https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15
     // except for comment
-    const values = [favGames.thumb, favGames.title, favGames.steamRatingCount, favGames.steamRatingPercent, favGames.comment]// *****
+    const values = [favGames.gameID,favGames.thumb, favGames.title, favGames.steamRatingCount, favGames.steamRatingPercent, favGames.comment]// *****
     client.query(sql, values)
     .then(data => {
         res.send("the game has been added to favorite");
