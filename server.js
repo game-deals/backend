@@ -19,6 +19,7 @@ server.get('/getGames/:id', getGamesByIdHandler)
 server.get('/getFav', getFavHandler)
 server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
+server.get('/getAboutData' ,getaboutData)
 server.get('*', errorHandler);
 
 function addToFav(req, res){
@@ -51,11 +52,20 @@ function gitListOfDeals(req, res) {
       //  console.log(result.data);
       res.send(Game);
     })
-
-    .catch((error) => {
-      errorHandler(error, req, res);
-    });
-}
+ }
+ function getaboutData (req, res) {
+  
+    let url = `https://sheetdb.io/api/v1/zqqzaxhqgh2cr`;
+          axios.get(url)
+          .then(result =>{
+           let about=result.data;
+               //  console.log(result.data);
+               res.send(about);
+          })
+       .catch((error)=>{
+          errorHandler(error, req, res) 
+       })
+    }
 
 function getGamesByIdHandler(req, res) {
     const id= encodeURIComponent(req.params.id);
