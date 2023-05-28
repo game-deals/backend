@@ -44,7 +44,7 @@ function addToFav(req, res){
 }
 
 function gitListOfDeals(req, res) {
-  let url = `https://www.cheapshark.com/api/1.0/deals`;
+  let url = `https://www.cheapshark.com/api/1.0/deals?storeID=1`;
   axios
     .get(url)
     .then((result) => {
