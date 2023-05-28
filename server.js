@@ -18,6 +18,7 @@ const client = new pg.Client("postgresql://localhost:5432/games");
 server.get('/getMovies/:id', getMoviesByIdHandler)
 server.post('/addToFav', addToFav);
 server.get('/',gitListOfDeals );
+server.get('/getAboutData' ,getaboutData)
 server.get('*', errorHandler);
 
 function addToFav(req, res){
@@ -50,6 +51,20 @@ function gitListOfDeals (req, res) {
        errorHandler(error, req, res) 
     })
  }
+ function getaboutData (req, res) {
+  
+    let url = `https://sheetdb.io/api/v1/zqqzaxhqgh2cr`;
+          axios.get(url)
+          .then(result =>{
+           let about=result.data;
+               //  console.log(result.data);
+               res.send(about);
+          })
+       .catch((error)=>{
+          errorHandler(error, req, res) 
+       })
+    }
+
 function getMoviesByIdHandler(req, res) {
     const id= encodeURIComponent(req.params.id);
 console.log(encodeURIComponent(req.params.id))
