@@ -166,9 +166,9 @@ function trendingHandler(req, res) {
 
 }
 function trendingNewsHandler(req, res) {
-  const title = req.params.title.replace(/-/g,"");
+  const title = req.params.title;
 
-  const url =` https://newsapi.org/v2/everything?q="${title}"&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0`
+  const url =` https://newsapi.org/v2/everything?q=${title}&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0`
 
 
   axios.get(url)
