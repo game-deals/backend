@@ -11,6 +11,7 @@ let axios = require("axios");
 const client = new pg.Client("postgresql://localhost:5432/games");
 ////////////////////////////////
 
+server.get('/trendingNews/:title', trendingNewsHandler)
 server.put("/update/:id", updateGame);
 server.delete("/delete/:id", deleteGame);
 server.get('/trending', trendingHandler)
@@ -132,7 +133,8 @@ function deleteGame(req, res) {
 }
 
 function trendingHandler(req, res) {
-    const url =' https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0'
+  
+    const url ='https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0'
 
 
     axios.get(url)
@@ -150,6 +152,30 @@ function trendingHandler(req, res) {
             console.log('sorry you have something error', error)
             res.status(500).send(error);
         })
+
+
+}
+function trendingNewsHandler(req, res) {
+  const title = req.params.title.replace(/-/g,"");
+
+  const url =` https://newsapi.org/v2/everything?q="${title}"&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0`
+
+
+  axios.get(url)
+      .then(axiosResult => {
+
+          let mapResult = axiosResult.data.articles.map(item => {
+              let singlemovie = new axiosTrending(item.title, item.description, item.urlToImage, item.url);
+              return singlemovie;
+          })
+          console.log(mapResult)
+          res.send(mapResult)
+
+      })
+      .catch((error) => {
+          console.log('sorry you have something error', error)
+          res.status(500).send(error);
+      })
 
 
 }
