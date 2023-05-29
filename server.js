@@ -19,7 +19,7 @@ server.get('/getGames/:id', getGamesByIdHandler)
 server.get('/getFav', getFavHandler)
 server.post('/addToFav', addToFav);
 server.get('/:id',gitListOfDeals );
-server.get('/getAboutData' ,getaboutData)
+server.get('/getAboutData' ,getaboutData);
 server.get('*', errorHandler);
 
 function addToFav(req, res){
