@@ -144,7 +144,7 @@ function deleteGame(req, res) {
 
 function trendingHandler(req, res) {
   
-    const url ='https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0'
+    const url ='https://newsapi.org/v2/everything?q=steam AND release AND games&from=2023-05-25&to=2023-05-25&language=en&sortBy=popularity&apiKey=a5718a6d8f284115993a5ae29c16d44e'
 
 
     axios.get(url)
@@ -168,7 +168,7 @@ function trendingHandler(req, res) {
 function trendingNewsHandler(req, res) {
   const title = req.params.title;
 
-  const url =` https://newsapi.org/v2/everything?q=${title}&language=en&sortBy=popularity&apiKey=1b0a9b5a72b14754bba7c153ec2364e0`
+  const url =` https://newsapi.org/v2/everything?q="GTA"&language=en&sortBy=popularity&apiKey=a5718a6d8f284115993a5ae29c16d44e`
 
 
   axios.get(url)
