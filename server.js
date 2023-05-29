@@ -18,7 +18,7 @@ server.get('/trending', trendingHandler)
 server.get('/getGames/:id', getGamesByIdHandler)
 server.get('/getFav', getFavHandler)
 server.post('/addToFav', addToFav);
-server.get('/',gitListOfDeals );
+server.get('/:id',gitListOfDeals );
 server.get('/getAboutData' ,getaboutData)
 server.get('*', errorHandler);
 
@@ -44,7 +44,8 @@ function addToFav(req, res){
 }
 
 function gitListOfDeals(req, res) {
-  let url = `https://www.cheapshark.com/api/1.0/deals?storeID=1`;
+  const id = req.params.id;
+  let url = `https://www.cheapshark.com/api/1.0/deals?storeID=${id}`;
   axios
     .get(url)
     .then((result) => {
