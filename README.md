@@ -70,4 +70,4 @@ This will start the application. Open a web browser and navigate to http://local
 
 # 🎮 Demo 
 
-- Check out our live demo at 
+- Check out our live demo at  https://gamedeals2023.netlify.app/
