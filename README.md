@@ -15,6 +15,7 @@ Pc games are quite expensive, so we will build a website that will show the deal
 - Review games: displays a section for review games.
 
 <hr/>
+# -------------------------
 
 # 🎮 Technology and Communication
 
